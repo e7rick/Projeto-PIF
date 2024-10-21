@@ -1,5 +1,5 @@
 
-# JOGO EM C ⚙️
+# JOGO EM C 
 
 ## 🐍 SNAKE 🐍
 
