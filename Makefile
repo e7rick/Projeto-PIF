@@ -1,41 +1,16 @@
-# Compiler and flags
-CC = gcc
-CFLAGS = -Wall -Werror -g -I$(INCLUDE_DIR)
+all: main
 
-#project name
-PROJ_NAME = cli-lib-example
+CC = clang
+override CFLAGS += -g -Wno-everything -pthread -lm
 
-# Target directories
-BUILD_DIR   = build
-OBJ_DIR     = $(BUILD_DIR)/obj
-SRC_DIR     = src
-INCLUDE_DIR = include
+SRCS = $(shell find . -name '.ccls-cache' -type d -prune -o -type f -name '*.c' -print)
+HEADERS = $(shell find . -name '.ccls-cache' -type d -prune -o -type f -name '*.h' -print)
 
-# Source files
-SRC_FILES = $(notdir $(wildcard $(SRC_DIR)/*.c))
-OBJ_FILES = $(SRC_FILES:%.c=$(OBJ_DIR)/%.o)
+main: $(SRCS) $(HEADERS)
+	$(CC) $(CFLAGS) $(SRCS) -o "$@"
 
-# Build target
-all: $(OBJ_DIR) $(OBJ_FILES)
-	@echo Creating $(BUILD_DIR)/$(PROJ_NAME)
-	@$(CC) $(CFLAGS) -o $(BUILD_DIR)/$(PROJ_NAME) $(OBJ_FILES)
+main-debug: $(SRCS) $(HEADERS)
+	$(CC) $(CFLAGS) -O0 $(SRCS) -o "$@"
 
-# Build directory
-$(BUILD_DIR):
-	mkdir -p $(BUILD_DIR)
-
-$(OBJ_DIR): $(BUILD_DIR)
-	mkdir -p $(OBJ_DIR)
-
-# Object files
-$(OBJ_DIR)/%.o: $(SRC_DIR)/%.c
-	@echo Compiling $@...
-	@$(CC) $(CFLAGS) -c $< -o $@
-
-# Clean target
 clean:
-	rm -rf $(BUILD_DIR)
-
-# Run target
-run: all
-	./$(BUILD_DIR)/cli-lib-example
+	rm -f main main-debug
