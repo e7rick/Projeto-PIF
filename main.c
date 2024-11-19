@@ -89,17 +89,17 @@ void borda(struct Cobra *cobra, struct Comida *comida) {
     screenClear();
     printf(" ");
     for (int i = 0; i < largura; i++) {
-        printf("#");
+        printf("-");
     }
     printf("\n");
     for (int i = 0; i < altura; i++) {
-        printf("#");
+        printf("|");
         for (int j = 0; j < largura; j++) {
             int posicaoCobra = 0;
             struct CaudaCobra *atual = cobra->cabeca;
             while (atual != NULL) {
                 if (atual->posicao.x == j && atual->posicao.y == i) {
-                    printf(corazul "y" resetarRestante); 
+                    printf(corazul "l" resetarRestante); 
                     posicaoCobra = 1;
                     break;
                 }
@@ -113,11 +113,11 @@ void borda(struct Cobra *cobra, struct Comida *comida) {
                 }
             }
         }
-        printf("#\n");
+        printf("|\n");
     }
     printf(" ");
     for (int i = 0; i < largura; i++) {
-        printf("#");
+        printf("-");
     }
     printf("\n");
 }
