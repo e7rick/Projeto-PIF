@@ -31,7 +31,7 @@ Para executar o Snake, siga estas etapas:
 3. Compile o programa:
    necessário a existencia do Makefile.
    use a seguinte ordem de comandos:
-   cd Projeto-PIF
+   cd Projeto-PIF <br>
    make
 
 5. Rode o programa:
