@@ -30,9 +30,12 @@ Para executar o Snake, siga estas etapas:
    
 3. Compile o programa:
    necessário a existencia do Makefile.
+   use a seguinte ordem de comandos:
+   cd Projeto-PIF
+   make
 
-4. Rode o programa:
-   Com o Makefile inserido, apenas da run no código.
+5. Rode o programa:
+   Com o Makefile inserido, apenas coloque ./main no terminal e divirta-se.
 
 ## 👩‍💻 Membros
 
