@@ -10,7 +10,7 @@
 #define arquivoScore "score.txt"
 #define velocidadeInicial 200000
 #define velocidadePosmaca 250000
-#define corverde "\x1b[32m"
+#define corazul "\x1b[34m"
 #define corvermelha "\x1b[31m"
 #define coramarelo "\x1b[33m"
 #define resetarRestante "\x1b[0m"
@@ -35,7 +35,7 @@ struct Comida {
     struct Ponto posicao;
 };
 
-void salvarPontuacao(int pontuacao) {
+void safeScore(int pontuacao) {
     FILE *arquivo = fopen(arquivoScore, "a");
     if (arquivo == NULL) {
         fprintf(stderr, "erro ao abrir o arquivo: %s\n", arquivoScore);
@@ -45,7 +45,7 @@ void salvarPontuacao(int pontuacao) {
     fclose(arquivo);
 }
 
-void carregarPontuacoes() {
+void carregarScore() {
     FILE *arquivo = fopen(arquivoScore, "r");
     if (arquivo == NULL) {
         fprintf(stderr, "erro ao abrir o arquivo: %s\n", arquivoScore);
@@ -58,24 +58,25 @@ void carregarPontuacoes() {
     fclose(arquivo);
 }
 
+
 void alocarMemoriaCobra(struct Cobra *cobra) {
     struct CaudaCobra *corpo = cobra->cabeca;
     while (corpo != NULL) {
         struct CaudaCobra *ptr = corpo->ptr;
-        free(corpo);
+        free(corpo);  
         corpo = ptr;
     }
     cobra->cabeca = NULL;
     cobra->cauda = NULL;
 }
 
-void start(struct Cobra *cobra, struct Comida *comida, int *velocidade) {
+void inicio(struct Cobra *cobra, struct Comida *comida, int *velocidade) {
     struct CaudaCobra *cabecaCauda = (struct CaudaCobra *)malloc(sizeof(struct CaudaCobra));
     cabecaCauda->posicao.x = largura / 2;
     cabecaCauda->posicao.y = altura / 2;
     cabecaCauda->ptr = NULL;
     cobra->cabeca = cabecaCauda;
-    cobra->cauda = cabecaCauda;
+    cobra->cauda = cabecaCauda;  
     cobra->comprimento = 1;
     cobra->direcao.x = 1;
     cobra->direcao.y = 0;
@@ -94,17 +95,17 @@ void borda(struct Cobra *cobra, struct Comida *comida) {
     for (int i = 0; i < altura; i++) {
         printf("#");
         for (int j = 0; j < largura; j++) {
-            int posicapCobra = 0;
+            int posicaoCobra = 0;
             struct CaudaCobra *atual = cobra->cabeca;
             while (atual != NULL) {
                 if (atual->posicao.x == j && atual->posicao.y == i) {
-                    printf(corverde "x" resetarRestante);
-                    posicapCobra = 1;
+                    printf(corazul "y" resetarRestante); 
+                    posicaoCobra = 1;
                     break;
                 }
                 atual = atual->ptr;
             }
-            if (!posicapCobra) {
+            if (!posicaoCobra) {
                 if (comida->posicao.x == j && comida->posicao.y == i) {
                     printf(corvermelha "O" resetarRestante);
                 } else {
@@ -130,15 +131,15 @@ void atualizarCobra(struct Cobra *cobra) {
     if (novaCabeca->posicao.x < 0 || novaCabeca->posicao.x >= largura || novaCabeca->posicao.y < 0 || novaCabeca->posicao.y >= altura) {
         printf(corvermelha "GAME OVER! " resetarRestante);
         printf(coramarelo "SCORE:" resetarRestante " %d\n", cobra->comprimento - 1);
-        salvarPontuacao(cobra->comprimento - 1);
+        safeScore(cobra->comprimento - 1);
         printf("\nPontuações anteriores:\n");
-        carregarPontuacoes();
-        alocarMemoriaCobra(cobra);
+        carregarScore();
+        alocarMemoriaCobra(cobra);  
         exit(0);
     }
 }
 
-void paraFruta(struct Cobra *cobra, struct Comida *comida, int *velocidade) {
+void fruta(struct Cobra *cobra, struct Comida *comida, int *velocidade) {
     if (cobra->cabeca->posicao.x == comida->posicao.x && cobra->cabeca->posicao.y == comida->posicao.y) {
         cobra->comprimento++;
         comida->posicao.x = rand() % largura;
@@ -153,9 +154,9 @@ void paraFruta(struct Cobra *cobra, struct Comida *comida, int *velocidade) {
         while (corpo->ptr->ptr != NULL) {
             corpo = corpo->ptr;
         }
-        free(corpo->ptr);
+        free(corpo->ptr);  
         corpo->ptr = NULL;
-        cobra->cauda = corpo;
+        cobra->cauda = corpo;  
     }
 }
 
@@ -164,10 +165,11 @@ void tela() {
     screenUpdate();
 }
 
-void menuPrincipal() {
+void manu() {
     screenClear();
     printf("Bem-vindo ao jogo da cobrinha!\n\n");
     printf("Pressione qualquer botão para começar :)\n");
+    printf("Para pausar o jogo pressione 'q'\n");
 }
 
 int main() {
@@ -176,13 +178,14 @@ int main() {
     char teclapre;
     int pontuacao = 0;
     int velocidade;
+    int pausa = 0;  
     srand(time(NULL));
     keyboardInit();
     tela();
     while (1) {
-        menuPrincipal();
+        manu();
         getchar();
-        start(&cobra, &comida, &velocidade);
+        inicio(&cobra, &comida, &velocidade);
         while (1) {
             if (keyhit()) {
                 teclapre = readch();
@@ -211,17 +214,26 @@ int main() {
                         cobra.direcao.y = 0;
                     }
                     break;
-                case 'q':
-                    salvarPontuacao(pontuacao);
-                    alocarMemoriaCobra(&cobra);
-                    return 0;
+                case 'q':  
+                    if (pausa == 0) {
+                        pausa = 1;
+                        screenClear();
+                        printf("Jogo pausado. Pressione Q para continuar.\n");
+                        getchar();  
+                    } else {
+                        pausa = 0;
+                    }
+                    break;
                 }
             }
-            atualizarCobra(&cobra);
-            paraFruta(&cobra, &comida, &velocidade);
-            borda(&cobra, &comida);
-            usleep(velocidade);
-            pontuacao = cobra.comprimento - 1;
+
+            if (pausa == 0) {  
+                atualizarCobra(&cobra);
+                fruta(&cobra, &comida, &velocidade);
+                borda(&cobra, &comida);
+                usleep(velocidade);
+                pontuacao = cobra.comprimento - 1;
+            }
         }
     }
     return 0;
