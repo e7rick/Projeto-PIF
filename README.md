@@ -4,25 +4,22 @@
 
 ## 📄 Descrição
 
-Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.
+Este código implementa um jogo simples de Cobrinha (ou Snake) em C, onde o jogador controla a cobrinha para comer a comida, crescer e evitar colisões com as bordas do cenário..
 
 ## 🎯 Objetivo do Jogo
 
-O objetivo é evitar que a cobra colida com as paredes e comer a fruta o máximo que conseguir para coletar a maior quantidade de pontos possíveis.
-Divirta-se 
+O objetivo é evitar que a cobra colida com as paredes e comer o máximo de frutas que conseguir para coletar a maior quantidade de pontos possíveis.
+Divirta-se 😊 
 
-### ⚾ Múltiplas Bolas:
-Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.
+### 🏆 Score:
+A pontuação é calculada pelo comprimento da cobra, com 1 ponto para cada fruta consumida pela cobra, Além de mostrar o histórico de pontuações no final da partida.
 
-### 👾 Pontuação Duplicada:
-Lorem Ipsum has been the industry's standard
-
-### ⚡️ Alta Velocidade:
-Lorem Ipsum has been the industry's standard
+### ⚡️ Velocidade:
+A velocidade do jogo é ajustada à medida que a cobra cresce, ficando mais rápida depois de cada comida.
 
 
 ## 🕹️ Como Jogar
-Controles: Use as teclas W (cima), A (esquerda), S (baixo) e D (direita) para mover a cobra, Q (pausar).
+Controles: Use as teclas W (cima), A (esquerda), S (baixo), D (direita) para mover a cobra e Q (pausar).
 
 
 ## ♟️ Executando o Jogo
