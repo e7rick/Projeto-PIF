@@ -1,89 +1,252 @@
-/**
- * main.h
- * Created on Aug, 23th 2023
- * Author: Tiago Barros
- * Based on "From C to C++ course - 2002"
-*/
-
+#include <stdio.h>
+#include <stdlib.h>
+#include <time.h>
 #include <string.h>
-
-#include "screen.h"
 #include "keyboard.h"
-#include "timer.h"
+#include "screen.h"
 
-int x = 34, y = 12;
-int incX = 1, incY = 1;
+#define largura 60
+#define altura 30
+#define arquivoScore "score.txt"
+#define velocidadeInicial 200000 
+#define velocidadePosmaca 250000 
 
-void printHello(int nextX, int nextY)
-{
-    screenSetColor(CYAN, DARKGRAY);
-    screenGotoxy(x, y);
-    printf("           ");
-    x = nextX;
-    y = nextY;
-    screenGotoxy(x, y);
-    printf("Hello World");
-}
+#define corverde "\x1b[32m"
+#define corvermelha "\x1b[31m"
+#define resetarRestante "\x1b[0m"
 
-void printKey(int ch)
-{
-    screenSetColor(YELLOW, DARKGRAY);
-    screenGotoxy(35, 22);
-    printf("Key code :");
+typedef struct Ponto {
+ int x, y;
+} Ponto;
 
-    screenGotoxy(34, 23);
-    printf("            ");
+typedef struct CaudaCobra {
+ Ponto posicao;
+ struct CaudaCobra *ptr;
+} CaudaCobra;
+
+typedef struct {
+ CaudaCobra *cabeca;
+ CaudaCobra *cauda;
+ int comprimento;
+ Ponto direcao;
+} Cobra;
+
+typedef struct {
+ Ponto posicao;
+} Comida;
+
+
+void salvarPontuacao(int pontuacao);
+void carregarPontuacoes();
+void alocarMemoriaCobra(Cobra *cobra);
+
+void start(Cobra *cobra, Comida *comida, int *velocidade) {
+CaudaCobra *cabecaCauda =(CaudaCobra*)malloc(sizeof(CaudaCobra));
     
-    if (ch == 27) screenGotoxy(36, 23);
-    else screenGotoxy(39, 23);
+ cabecaCauda -> posicao.x = largura / 2;
+ cabecaCauda -> posicao.y = altura / 2;
+ cabecaCauda-> ptr = NULL;
 
-    printf("%d ", ch);
-    while (keyhit())
-    {
-        printf("%d ", readch());
+ cobra -> cabeca = cabecaCauda;
+ cobra -> cauda = cabecaCauda;
+ cobra-> comprimento = 1;
+ cobra-> direcao.x = 1; 
+ cobra -> direcao.y = 0;
+
+ comida-> posicao.x = rand() % largura;
+ comida-> posicao.y = rand() % altura;
+
+ *velocidade = velocidadeInicial;
+}
+
+void borda(Cobra *cobra, Comida *comida) {
+    screenClear();
+
+ printf(" ");
+ for (int i = 0; i < largura; i++) {
+   printf("#");
+ }
+   printf("\n");
+
+for (int i = 0; i < altura; i++) {
+        printf("#");
+    
+ for (int j = 0; j < largura; j++) {
+  int posicapCobra = 0;
+  CaudaCobra *atual = cobra -> cabeca;
+     
+while (atual != NULL) {
+    
+ if (atual ->posicao.x == j && atual -> posicao.y == i) {
+  printf(corverde "x" resetarRestante);
+     
+    posicapCobra = 1;
+    break;
+ }
+atual = atual -> ptr;
+}
+if (!posicapCobra) {
+    if (comida -> posicao.x == j && comida -> posicao.y == i) {
+    printf(corvermelha "O" resetarRestante);
+     } else {
+     printf(" ");
+     }
+    }
+   }
+    printf("#\n");
+}
+
+
+    printf(" ");
+    for (int i = 0; i < largura; i++) {
+    printf("#");
+    }
+    printf("\n");
+}
+
+void atualizarCobra(Cobra *cobra) {
+CaudaCobra * novaCabeca = (CaudaCobra *) malloc (sizeof(CaudaCobra));
+    novaCabeca-> posicao.x = cobra -> cabeca -> posicao.x + cobra->direcao.x;
+    novaCabeca->posicao.y = cobra -> cabeca-> posicao.y + cobra-> direcao.y;
+    novaCabeca-> ptr = cobra->cabeca;
+    cobra -> cabeca = novaCabeca;
+
+if (novaCabeca ->  posicao.x < 0 || novaCabeca -> posicao.x >= largura || novaCabeca-> posicao.y < 0 || novaCabeca->  posicao.y >= altura) {
+printf("Game over ! pontuação: %d\n", cobra->comprimento - 1);
+ salvarPontuacao(cobra-> comprimento - 1); 
+  printf("\nPontuações anteriores:\n");
+ carregarPontuacoes(); 
+ alocarMemoriaCobra(cobra); 
+ exit(0); 
     }
 }
 
-int main() 
-{
-    static int ch = 0;
-    static long timer = 0;
-
-    screenInit(1);
-    keyboardInit();
-    timerInit(50);
-
-    printHello(x, y);
-    screenUpdate();
-
-    while (ch != 10 && timer <= 100) //enter or 5s
-    {
-        // Handle user input
-        if (keyhit()) 
-        {
-            ch = readch();
-            printKey(ch);
-            screenUpdate();
-        }
-
-        // Update game state (move elements, verify collision, etc)
-        if (timerTimeOver() == 1)
-        {
-            int newX = x + incX;
-            if (newX >= (MAXX -strlen("Hello World") -1) || newX <= MINX+1) incX = -incX;
-            int newY = y + incY;
-            if (newY >= MAXY-1 || newY <= MINY+1) incY = -incY;
-
-            printHello(newX, newY);
-
-            screenUpdate();
-            timer++;
-        }
+void paraFruta(Cobra *cobra, Comida *comida, int *velocidade) {
+if (cobra -> cabeca->posicao.x == comida->posicao.x && cobra ->cabeca-> posicao.y == comida ->posicao.y) {
+ cobra -> comprimento++;
+ comida -> posicao.x = rand() % largura;
+ comida -> posicao.y = rand() % altura;
+  if (*velocidade > velocidadePosmaca) {
+    *velocidade = *velocidade - velocidadePosmaca;
+  } else {
+  *velocidade = velocidadePosmaca;
+}
+} else {
+   CaudaCobra *corpo = cobra->cabeca;
+    
+    while (corpo -> ptr ->ptr != NULL) {
+    corpo = corpo-> ptr;
+}
+        
+    free(corpo -> ptr);
+    corpo-> ptr= NULL;
+    cobra ->cauda = corpo;
     }
+}
 
-    keyboardDestroy();
-    screenDestroy();
-    timerDestroy();
+void salvarPontuacao(int pontuacao) {
+ FILE *arquivo = fopen(arquivoScore, "a");
+ 
+  if (arquivo == NULL) {
+  fprintf(stderr, "erro ao abrir o arquivo: %s\n", arquivoScore);
+  return;
+}
+  fprintf(arquivo, "%d\n", pontuacao);
+  fclose(arquivo);
+}
+
+void carregarPontuacoes() {
+ FILE *arquivo = fopen(arquivoScore, "r");
+ if (arquivo == NULL) {
+  fprintf(stderr, "erro ao abrir o arquivo: %s\n", arquivoScore);
+  return;
+}
+  int pontuacao;
+  while (fscanf(arquivo, "%d", &pontuacao) != EOF) {
+   printf("%d ", pontuacao);
+}
+    fclose(arquivo);
+}
+
+void tela() {
+    screenClear();
+    screenUpdate();
+}
+
+void menuPrincipal() {
+    screenClear();
+    printf("Bem vindo ao jogo da cobrinha !\n\n");
+    printf("pressione qualquer botao para começar :)\n");
+}
+
+void alocarMemoriaCobra(Cobra *cobra) {
+    CaudaCobra *corpo = cobra ->cabeca;
+    while (corpo  != NULL) {
+        CaudaCobra *ptr = corpo -> ptr;
+        free(corpo ); 
+        corpo =ptr;
+    }
+    cobra -> cabeca = NULL;
+    cobra -> cauda = NULL;
+}
+
+int main() {
+    Cobra cobra;
+    Comida comida;
+    char teclapre;
+    int pontuacao = 0;
+    int velocidade;
+
+    srand(time(NULL));
+    keyboardInit();
+    tela();
+
+while (1) {
+ menuPrincipal();
+ getchar(); 
+ start(&cobra, &comida, &velocidade);
+
+ while (1) {
+  if (keyhit()) {
+    teclapre = readch();
+    switch (teclapre) {
+    case 'w':
+    if (cobra.direcao.y == 0) {
+     cobra.direcao.x = 0;
+      cobra.direcao.y = -1;
+ }
+  break;
+     case 's':
+      if (cobra.direcao.y == 0) {
+      cobra.direcao.x = 0;
+      cobra.direcao.y = 1;
+}
+  break;
+     case 'a':
+      if (cobra.direcao.x == 0) {
+      cobra.direcao.x = -1;
+      cobra.direcao.y = 0;
+}
+ break;
+     case 'd':
+      if (cobra.direcao.x == 0) {
+      cobra.direcao.x = 1;
+     cobra.direcao.y = 0;
+}
+ break;
+     case 'q':
+     salvarPontuacao(pontuacao);
+     alocarMemoriaCobra(&cobra);
+    return 0;
+ }
+}
+     atualizarCobra(&cobra);
+     paraFruta(&cobra, &comida, &velocidade);
+     borda(&cobra, &comida);
+     usleep(velocidade); 
+     pontuacao = cobra.comprimento - 1;
+        }
+}
 
     return 0;
 }
