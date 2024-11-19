@@ -5,8 +5,8 @@
 #include "keyboard.h"
 #include "screen.h"
 
-#define largura 60
-#define altura 30
+#define largura 81
+#define altura 24
 #define arquivoScore "score.txt"
 #define velocidadeInicial 200000
 #define velocidadePosmaca 250000
