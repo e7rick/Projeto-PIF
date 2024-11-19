@@ -1,7 +1,6 @@
+ 
 
-# JOGO EM C 
-
-## 🐍 SNAKE 🐍
+# 🐍 SNAKE 🐍
 
 ## 📄 Descrição
 
