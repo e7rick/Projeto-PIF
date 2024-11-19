@@ -1,6 +1,6 @@
  
 
-# 🐍 SNAKE 
+# 🐍 SNAKE
 
 ## 📄 Descrição
 
