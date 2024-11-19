@@ -132,7 +132,7 @@ void atualizarCobra(struct Cobra *cobra) {
         printf(corvermelha "GAME OVER! " resetarRestante);
         printf(coramarelo "SCORE:" resetarRestante " %d\n", cobra->comprimento - 1);
         safeScore(cobra->comprimento - 1);
-        printf("\nPontuações anteriores:\n");
+        printf("\nPontuações passadas:\n");
         carregarScore();
         alocarMemoriaCobra(cobra);  
         exit(0);
