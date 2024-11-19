@@ -23,7 +23,7 @@ Lorem Ipsum has been the industry's standard
 
 
 ## 🕹️ Como Jogar
-Controles: Use as teclas W (cima), A (esquerda), S (baixo) e D (direita) para mover a cobra.
+Controles: Use as teclas W (cima), A (esquerda), S (baixo) e D (direita) para mover a cobra, Q (pausar).
 
 
 ## ♟️ Executando o Jogo
