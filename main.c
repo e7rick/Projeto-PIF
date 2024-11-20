@@ -99,7 +99,7 @@ void borda(struct Cobra *cobra, struct Comida *comida) {
             struct CaudaCobra *atual = cobra->cabeca;
             while (atual != NULL) {
                 if (atual->posicao.x == j && atual->posicao.y == i) {
-                    printf(corazul "y" resetarRestante); 
+                    printf(corazul "l" resetarRestante); 
                     posicaoCobra = 1;
                     break;
                 }
